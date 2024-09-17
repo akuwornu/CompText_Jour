@@ -1,0 +1,97 @@
+---
+title: "homework-basic-r-proficiency"
+author: "Rob Wells"
+date: "2024-08-23"
+output: html_document
+---
+
+# Homework - Basic R Proficiency
+
+This class exercise is a companion to the following chapter in Computational Text Analysis: [Ch. 11  Loading and Analyzing Data](https://wellsdata.github.io/CompText_Jour/docs/r-load-analyze-visualize.html)
+
+
+#1: load tidyverse, rio and janitor libraries
+```{r}
+library(tidyverse)
+library(rio)
+library(janitor)
+
+#Tidyverse, Rio and Janitor packages successfully loaded.
+```
+
+
+#2: Import Data using read.csv:
+
+https://github.com/wellsdata/CompText_Jour/raw/main/data/mob_analysis_data.csv
+```{r}
+Mob<-read.csv("https://github.com/wellsdata/CompText_Jour/raw/main/data/mob_analysis_data.csv")
+
+#Mob data imported through the csv file link provided.
+```
+
+#3: Provide dimensions: Gives number rows, then columns
+
+```{r}
+dim(Mob)
+nrow(Mob)
+ncol(Mob)
+
+#The Data has 3836 rows and 7 columns.
+```
+
+#4: Show names of your columns
+
+```{r}
+colnames(Mob)
+
+#the displayed column names are "X", "docname", "Newspaper", "Year", "Beginning.of.Passage", "keyword" and "End.of.Passage.
+```
+
+#5: Check data types
+
+```{r}
+str(Mob)
+
+#Data type previewed using the string command. Data types are integers and characters.
+```
+
+#6: Display the first six rows
+
+```{r}
+head(Mob)
+
+#First six rows displayed using the head command.
+```
+#7: Create a table counting the number of entries by year and display the top 5 results
+
+```{r}
+YrTab <- Mob %>%
+  group_by(Year) %>%
+  summarise(
+    count_tracts = n()
+  )
+head(YrTab, n = 5)
+
+#Table counting number of entries by year and displaying top 5 results.
+```
+#8: Create a table that counts the different entries in the "keyword" column
+
+```{r}
+KeywordTab <- Mob %>%
+  group_by(keyword) %>%
+  summarise(
+    count_tracts = n()
+  )
+# Table for different entries in the "keyword" column.
+```
+
+
+#9: Create a simple column ggplot chart that shows the total entries by year
+
+```{r}
+ggplot(YrTab, aes(x = Year, y = count_tracts)) +
+geom_col(fill = "steelblue") +
+  labs(title = "Total Entries by Year", x = "Year", y = "Total Entries") +
+  theme_minimal()
+```
+
