@@ -1,0 +1,75 @@
+
+#Your name, date and assignment 
+---
+title: "Assignment 1_AYK"
+author: "Yao"
+output: html_document
+date: "2024-09-17"
+---
+
+#Load relevant software libraries
+```{r}
+install.packages("tidyverse")
+library(tidyverse)
+library(rio)
+library(janitor)
+
+#Software libraries loaded
+```
+
+#Load the data: https://github.com/wellsdata/CompText_Jour/blob/main/data/blackindex_master.csv
+```{r}
+Black_Index <- read.csv("https://raw.githubusercontent.com/wellsdata/CompText_Jour/main/data/blackindex_master.csv")
+
+#Dataset imported using the read.csv command
+```
+
+#Using code, describe the number of rows and columns in the dataset
+```{r}
+dim(Black_Index)
+nrow(Black_Index)
+ncol(Black_Index)
+
+#the dataset has a dimension of 1803 rows and 30 columns
+```
+
+#Create a table that displays a count of the top 15 newspaper_city entries
+```{r}
+Top_15 <- Black_Index %>%
+count (newspaper_city) %>%
+ arrange(desc(newspaper_city)) %>%
+  slice_max(n, n=15)
+
+#Table displaying newspaper_city entries
+```
+
+#Create a table that counts the different entries in the "newspaper_city" column
+```{r}
+Dif_entries <- Black_Index %>%
+count (newspaper_city, sort = TRUE, name = "Count") %>%
+  arrange(desc(Count))
+
+#Table of counts of different entries in the "newspaper_city" column
+```
+
+#Create a table that counts all newspaper_city entries by year
+```{r}
+Entries_by_Yr <- Black_Index %>%
+  count (newspaper_city, year, sort = TRUE, name = "Count") %>%
+  arrange(desc(Count))
+```
+
+#Create a simple column ggplot chart that shows the total entries by year
+```{r}
+library(dplyr)
+library(ggplot2)
+  Black_Index %>%
+  group_by(year) %>%
+count(year) %>%
+  ggplot(aes(x=year, y=n, fill=n))+
+  geom_col(position = "dodge")+
+labs(title = "Graph of total entries by year",
+       subtitle = "Data covering years captured",
+       caption = "Graphic by Yao")
+```
+  
