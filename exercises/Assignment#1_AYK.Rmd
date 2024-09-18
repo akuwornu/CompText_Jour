@@ -57,6 +57,8 @@ count (newspaper_city, sort = TRUE, name = "Count") %>%
 Entries_by_Yr <- Black_Index %>%
   count (newspaper_city, year, sort = TRUE, name = "Count") %>%
   arrange(desc(Count))
+
+#Table showing newspaper_city entries count by year
 ```
 
 #Create a simple column ggplot chart that shows the total entries by year
@@ -71,5 +73,7 @@ count(year) %>%
 labs(title = "Graph of total entries by year",
        subtitle = "Data covering years captured",
        caption = "Graphic by Yao")
+  
+  #Graph showing total entries by year
 ```
   
