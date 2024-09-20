@@ -9,7 +9,6 @@ date: "2024-09-17"
 
 #Load relevant software libraries
 ```{r}
-install.packages("tidyverse")
 library(tidyverse)
 library(rio)
 library(janitor)
@@ -35,10 +34,10 @@ ncol(Black_Index)
 
 #Create a table that displays a count of the top 15 newspaper_city entries
 ```{r}
-Top_15 <- Black_Index %>%
+Top_5 <- Black_Index %>%
 count (newspaper_city) %>%
  arrange(desc(newspaper_city)) %>%
-  slice_max(n, n=15)
+  slice_max(n, n=5)
 
 #Table displaying newspaper_city entries
 ```
@@ -55,6 +54,7 @@ count (newspaper_city, sort = TRUE, name = "Count") %>%
 #Create a table that counts all newspaper_city entries by year
 ```{r}
 Entries_by_Yr <- Black_Index %>%
+  filter(!is.na(newspaper_city))%>%
   count (newspaper_city, year, sort = TRUE, name = "Count") %>%
   arrange(desc(Count))
 
@@ -63,9 +63,7 @@ Entries_by_Yr <- Black_Index %>%
 
 #Create a simple column ggplot chart that shows the total entries by year
 ```{r}
-library(dplyr)
-library(ggplot2)
-  Black_Index %>%
+  Entries_by_Yr %>%
   group_by(year) %>%
 count(year) %>%
   ggplot(aes(x=year, y=n, fill=n))+
