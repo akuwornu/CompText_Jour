@@ -63,10 +63,7 @@ Entries_by_Yr <- Black_Index %>%
 
 #Create a simple column ggplot chart that shows the total entries by year
 ```{r}
-  Entries_by_Yr %>%
-  group_by(year) %>%
-count(year) %>%
-  ggplot(aes(x=year, y=n, fill=n))+
+  ggplot(Entries_by_Yr, aes(x=year, y=Count, fill=Count))+
   geom_col(position = "dodge")+
 labs(title = "Graph of total entries by year",
        subtitle = "Data covering years captured",
@@ -74,4 +71,4 @@ labs(title = "Graph of total entries by year",
   
   #Graph showing total entries by year
 ```
-  
+  #
