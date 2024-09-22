@@ -32,14 +32,14 @@ ncol(Black_Index)
 #the dataset has a dimension of 1803 rows and 30 columns
 ```
 
-#Create a table that displays a count of the top 15 newspaper_city entries
+#Create a table that displays a count of the top 5 newspaper_city entries
 ```{r}
 Top_5 <- Black_Index %>%
 count (newspaper_city) %>%
  arrange(desc(newspaper_city)) %>%
   slice_max(n, n=5)
-
-#Table displaying newspaper_city entries
+print(Top_5)
+#Table displaying top 5 newspaper_city entries
 ```
 
 #Create a table that counts the different entries in the "newspaper_city" column
@@ -47,7 +47,7 @@ count (newspaper_city) %>%
 Dif_entries <- Black_Index %>%
 count (newspaper_city, sort = TRUE, name = "Count") %>%
   arrange(desc(Count))
-
+print(Dif_entries)
 #Table of counts of different entries in the "newspaper_city" column
 ```
 
@@ -57,7 +57,7 @@ Entries_by_Yr <- Black_Index %>%
   filter(!is.na(newspaper_city))%>%
   count (newspaper_city, year, sort = TRUE, name = "Count") %>%
   arrange(desc(Count))
-
+print(Entries_by_Yr)
 #Table showing newspaper_city entries count by year
 ```
 
