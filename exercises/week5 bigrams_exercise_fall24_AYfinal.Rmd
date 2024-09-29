@@ -148,27 +148,57 @@ Blackpress_Articles <- lynch%>%
   filter(!is.na(newspaper_name))%>%
   count(newspaper_name)%>%
 arrange(desc(n))
+print(Blackpress_Articles)
 #dataframe with black press articles
 ```
 
 #Create a second dataframe without black press articles
 ```{r}
-Whitepress_Articles <- lynch %>%
+Whitepress_Articles <- lynch %>%  #also known as the non-black press
    filter(!is.na(newspaper_name)) %>% 
    count(newspaper_name) %>%               
   arrange(desc(n))
+print(Whitepress_Articles)
 ```
-#Produce the top 20 bigrams for the black press and non-black press coverage
+#Produce the top 20 bigrams for the black press coverage
 ```{r}
-Blackpress_tkn <- str_replace_all(Blackpress_Articles$sentence, "- ", "")
-Blackpress_tkn_df <- tibble(Blackpress_tkn,)
+# Step 1: Process Black Press Articles for Bigrams
+blackpress_bigrams <- lynch %>%
+  filter(!is.na(black_press)) %>%
+  filter(!is.na(newspaper_name)) %>%
+  unnest_tokens(bigram, filename, token = "ngrams", n = 2) %>%
+  count(bigram, sort = TRUE) %>%
+  top_n(20, n) %>%
+  mutate(press_type = "Black Press")  # Add a label for Black Press
+```
 
+#Produce the top 20 bigrams for the non-black press coverage
+```{r}
+# Step 2: Process Non-Black Press Articles for Bigrams
+non_blackpress_bigrams <- lynch %>%
+  filter(is.na(black_press)) %>%
+  filter(!is.na(newspaper_name)) %>%
+  unnest_tokens(bigram, filename, token = "ngrams", n = 2) %>%
+  count(bigram, sort = TRUE) %>%
+  top_n(20, n) %>%
+  mutate(press_type = "Non-Black Press")  # Add a label for Non-Black Press
+```
 
-lynch_stories_tokenized <- lynch_stories_df %>%
-  unnest_tokens(word,lynch_stories)
-# Unnest includes lower, punct removal
+#Comparing data
+```{r}
+# Step 3: Combine the two datasets
+combined_bigrams <- bind_rows(blackpress_bigrams, non_blackpress_bigrams)
+
+# Step 4: Arrange by press type and frequency of bigrams
+combined_bigrams <- combined_bigrams %>%
+  arrange(desc(n), press_type)
+
+# Step 5: View the combined results in one table
+print(combined_bigrams)
 
 ```
-Compare and discuss!
+#Discussion!
+
+The bigrams from non-black press showed significantly higher values than the black press bigrams. That correlated with the volume of non-black press relative to the black press. In effect, the era of the study was characterized by more non-black press and it was also during the period of segregation. It was thus common to see the use of words such as negro, lynch, mob, jail, lynching and negroes in a lot of non-black press. There could be many explanations for this, but presummably, the black press must have reported such words with anger or disdain while the white press must have preferred the use of such words. But at least, the persistent use of such words gives an indication of the times of these newspaper coverages. Admittedly, the collation of the bigrams was quite difficult. I am still trying to grasp the principles. I believe one more session on this will clarify a few confusions I had.
 
 

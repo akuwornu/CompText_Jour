@@ -7,7 +7,6 @@ output: html_document
 
 # Jour 389/689 Fall 2024:
 
-
 ```{r}
 #load tidyverse, tidytext, rio and quanteda libraries
 library(tidyverse)
@@ -15,28 +14,27 @@ library(tidytext)
 library(rio)
 install.packages("quanteda")
 library(quanteda)
+
+#Relevant packages loaded/installed from library
 ```
 
+#Import dataframe
 ```{r}
-#Import dataframe 
-
 lynch <- read_csv("../data/articles_oct_19.csv")
 
+#dataframe imported using read csv command
 ```
 
-
 # Create a new dataframe that filters articles for 1900 to 1910
-
 ```{r}
-Post1900 <- lynch%>%
+ftd.art <- lynch%>%
   filter(year >=1900, year<=1910)
 #filtered articles for the 1900 decade
 ```
 
-
 # Count the number of distinct articles in 1900 dataframe
 ```{r}
-ct_distinct <- Post1900 %>%
+dis.art <- ftd.art %>%
   distinct(filename, .keep_all = TRUE) %>% 
   count(year)%>% 
   arrange(desc(n))
@@ -45,7 +43,7 @@ ct_distinct <- Post1900 %>%
 
 # Count the number of newspaper_states in the 1900 corpus
 ```{r}
-ct_states <- Post1900 %>%
+news.states <- ftd.art %>%
   distinct(filename, .keep_all = TRUE) %>% 
   count(newspaper_state)%>% 
   arrange(desc(n))
@@ -55,12 +53,12 @@ ct_states <- Post1900 %>%
 # Tokenize the 1900 lynching stories
 
 ```{r}
-lynch_stories <- str_replace_all(Post1900$sentence, "- ", "")
-lynch_stories_df <- tibble(lynch_stories,)
+Tok_ftd.art <- str_replace_all(ftd.art$sentence, "- ", "")
+Tok_ftd.art_df <- tibble(Toklynch,)
 
 
-lynch_stories_tokenized <- lynch_stories_df %>%
-  unnest_tokens(word,lynch_stories)
+Tok_ftd.art_tknz <- Tok_ftd.art_df %>%
+  unnest_tokens(word,Toklynch)
 # Unnest includes lower, punct removal
 ```
 
@@ -87,7 +85,7 @@ head(test)
 # Strip out stop words
 
 ```{r}
-lynch_stories_tokenized2 <- lynch_stories_tokenized %>%
+Tok_ftd.art_tknz_stripped <- Tok_ftd.art_tknz %>%
   anti_join(stop_words, by = c("word" = "word")) %>%
   filter(word != "temp_file") %>%
   filter(word != "lynch_stories_tokenized") %>%
@@ -95,36 +93,36 @@ lynch_stories_tokenized2 <- lynch_stories_tokenized %>%
 
 # Word Count
 
-ct_distinct1 <- lynch_stories_tokenized2 %>%
+ct_strip <- Tok_ftd.art_tknz_stripped %>%
   count(word, sort=TRUE)
 
-head(ct_distinct1)
+head(ct_strip)
 ```
 # Bigrams
 ## We are now creating two word phrases but before the stop words are taken out
 
 ```{r}
-lynch_stories_bigrams <- lynch_stories_df %>%
-  unnest_tokens(bigram, lynch_stories, token="ngrams", n=2)
+twowrd_bigram <- Tok_ftd.art_df %>%
+  unnest_tokens(bigram, Toklynch, token="ngrams", n=2)
 
-lynch_stories_bigrams_separated <- lynch_stories_bigrams %>%
+twowrd_bigram_sptd <- twowrd_bigram %>%
   separate(bigram, c("word1", "word2"), sep = " ")
 ```
 
 # Create a new dataframe with counts of the bigrams
 ```{r}
-ct_bigrams <- lynch_stories_bigrams_separated %>%
+ct_twowrdbigram <- twowrd_bigram_sptd %>%
   count(word1, word2, sort = TRUE)
 ```
 
 ## Now filter the counts 
 ```{r}
 
-lynch_stories_bigrams_filtered <- lynch_stories_bigrams_separated %>%
+twowrd_bigram_filtered <- twowrd_bigram_sptd %>%
   filter(!word1 %in% stop_words$word) %>%
   filter(!word2 %in% stop_words$word)
 
-ct_biagrams2 <- lynch_stories_bigrams_filtered %>%
+ct_filtered_biagrams <- twowrd_bigram_filtered %>%
   count(word1, word2, sort = TRUE) %>% 
   filter(!is.na(word1))
 
@@ -135,7 +133,7 @@ ct_biagrams2 <- lynch_stories_bigrams_filtered %>%
 Hint: use mutate
 
 ```{r}
-ct_biagrams2 <- lynch_stories_bigrams_filtered %>%
+twowrd_bigram_filtered_mut <- twowrd_bigram_filtered %>%
   mutate(decade = "1900")
 
 ```
@@ -143,7 +141,7 @@ ct_biagrams2 <- lynch_stories_bigrams_filtered %>%
 
 #Create one dataframe with black press articles
 ```{r}
-Blackpress_Articles <- lynch%>%
+Blackpress_Articles <- ftd.art%>%
   filter(!is.na(black_press))%>%
   filter(!is.na(newspaper_name))%>%
   count(newspaper_name)%>%
@@ -153,20 +151,25 @@ arrange(desc(n))
 
 #Create a second dataframe without black press articles
 ```{r}
-Whitepress_Articles <- lynch %>%
+Whitepress_Articles <- ftd.art %>%
    filter(!is.na(newspaper_name)) %>% 
    count(newspaper_name) %>%               
   arrange(desc(n))
 ```
-#Produce the top 20 bigrams for the black press and non-black press coverage
+
+#Produce the top 20 bigrams for the black press coverage
 ```{r}
-Blackpress_tkn <- str_replace_all(Blackpress_Articles$sentence, "- ", "")
-Blackpress_tkn_df <- tibble(Blackpress_tkn,)
+Blackpress_Arts_tkn <- str_replace_all(Blackpress_Articles$sentence, "- ", "")
+Blackpress_Arts_tkn_df <- tibble(Blackpress_Arts_tkn,)
 
 
-lynch_stories_tokenized <- lynch_stories_df %>%
-  unnest_tokens(word,lynch_stories)
-# Unnest includes lower, punct removal
+```
+
+#Produce the top 20 bigrams for the non-black press coverage
+```{r}
+Whitepress_Arts_tkn <- str_replace_all(Whitepress_Articles$sentence, "- ", "")
+Whitepress_Arts_tkn_df <- tibble(Whitepress_Arts_tkn,)
+
 
 ```
 Compare and discuss!
