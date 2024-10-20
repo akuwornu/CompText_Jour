@@ -61,6 +61,10 @@ kemi_index <- read_lines("../exercises/assets/extracted_text/kemi_extracted_1.tx
 extracted_lines <- kemi_index[16:58]
 
 
+x <- kemi_index |>
+  as.data.frame()
+
+
 # Print the extracted lines to the console
 cat(extracted_lines, sep = "\n")
 

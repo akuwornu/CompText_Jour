@@ -3,8 +3,6 @@ library(tidyverse)
 library(janitor)
 ```
 
-
-
 # Tabula to Extract Data from PDFs
 
 The PDF document has spawned a cottage industry offering tools to harvest data from the documents. There are online services like [CometDocs](https://www.cometdocs.com/) where you can upload your PDF and point and click your way into an Excel file. One of the best is a tool called [Tabula](https://tabula.technology/), built by journalists for journalists.
@@ -44,9 +42,7 @@ Good!
 
 ### Fun with mail in ballots
 
-We can't resist the temptation to open a crystal ball on the election.
-Let's calculate a new column describing the percent turnout by mail ballot by county
-We will use mutate to divide the total_received by total_sent
+We can't resist the temptation to open a crystal ball on the election. Let's calculate a new column describing the percent turnout by mail ballot by county We will use mutate to divide the total_received by total_sent
 
 ```{r}
 voters_by_county <- voters_by_county |> 
@@ -57,7 +53,8 @@ voters_by_county <- voters_by_county |>
 ```
 
 ## YOUR TURN
-Now you do the same. Use mutate to create a new column for pct_dem, pct_gop, pct_ind (the other) and determine total received by party. 
+
+Now you do the same. Use mutate to create a new column for pct_dem, pct_gop, pct_ind (the other) and determine total received by party.
 
 ```{r}
 voters_by_county <- voters_by_county |> 
@@ -70,7 +67,6 @@ voters_by_county <- voters_by_county |>
 
 
 ```
-
 
 Now, sort by the top five counties by return for each party
 
@@ -99,8 +95,6 @@ Now, sort by the top five counties by return for each party
 
 
 ```
-
-
 
 ## When it looks good, but needs a little fixing
 

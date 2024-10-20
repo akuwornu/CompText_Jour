@@ -1,0 +1,120 @@
+---
+title: "China Project - Class Assignment"
+author: "AY Kuwornu"
+date: "2024-10-15"
+output: html_document
+---
+
+#Load relevant library for the assignment
+```{r}
+library(tidyverse)
+library(rio)
+library(janitor)
+library (tidytext)
+library(readr)
+library (tidyr)
+library(ggplot2)
+
+```
+
+#1. Import csv data from github
+```{r}
+ChinaFDI <- read.csv("https://raw.githubusercontent.com/wellsdata/CompText_Jour/refs/heads/main/data/ChinaFDI-LAT_tidy.csv")
+```
+
+#2. Using code to count the number of unique articles in the dataset
+```{r}
+Unique_articles <- ChinaFDI %>%
+  distinct(article_nmbr) %>%
+  count()
+```
+
+#3. Remove useless metadata such as "Los Angeles Times" and "ISSN". 
+```{r}
+# Define the patterns to filter out
+patterns_to_remove <- c("Title", "Pages", "Publication date", "Publication subject","ISSN", "Language of publication: English", "Document URL", "Copyright", "Last updated", "Database", "STARTOFARTICLE", "ProQuest document ID","Classification", "https", "--", "People", "Publication info", "Illustration Caption","[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}", "Identifier /keyword", "Twitter")
+
+# Filter the rows where the 'text' column does NOT start with any of the specified patterns
+ChinaFDI_clean <- ChinaFDI %>%
+  filter(!grepl(paste0("^(", paste(patterns_to_remove, collapse="|"), ")"), text))
+
+```
+#Prof. Rob's code for removing useless data
+```{r}
+Clean_ChinaFDI <- ChinaFDI%>%
+mutate(text = str_squish(text)) |> 
+  mutate(text = tolower(text)) |>  
+  mutate(text = str_replace_all(text, "title|pages|publication date|publication subject|issn|language of publication: english|document url|copyright|last updated|database|startofarticle|proquest document id|classification|https|--|people|publication info|illustration|caption|[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}|identifier /keyword|twitter\\.", ""))
+
+```
+
+#4. Tokenize the data, remove stop words, remove the phrase "los angeles," and create a dataframe of one word per row
+```{r}
+# Step 1: Tokenize the data (split the text into individual words)
+ChinaFDI_tknz <- ChinaFDI_clean %>%
+  unnest_tokens(word, text)
+
+# Step 2: Remove stop words
+data("stop_words")  # Load the default stop words from tidytext
+ChinaFDI_clean2 <- ChinaFDI_tknz %>%
+  anti_join(stop_words, by = "word")
+
+# Step 3: Remove the phrase "los angeles"
+ChinaFDI_clean3 <- ChinaFDI_clean2 %>%
+  filter(!str_detect(word, "los angeles"))  # This removes rows containing the phrase "los angeles"
+
+# Step 4: Create a dataframe of one word per row
+# The resulting dataframe is already one word per row after tokenization
+# You can view the final dataframe
+
+print(ChinaFDI_clean3)
+```
+
+#5. Generate a list of the top 20 bigrams
+```{r}
+# To create bigrams 
+ChinaFDI_bigrams <- ChinaFDI %>%
+  unnest_tokens(bigram, text, token="ngrams", n=2)
+
+# Count the frequency of bigrams
+Bigrams_count <- ChinaFDI_bigrams %>%
+  count(bigram, sort = TRUE)
+
+# Top 20 most frequent bigrams
+top_20_bigrams <- ChinaFDI_bigrams_count %>%
+  top_n(20)
+
+# View the top 20 bigrams
+print(top_20_bigrams)
+```
+
+#6. Create a ggplot chart showing the top 20 bigrams
+```{r}
+plot <- ggplot(top_20_bigrams, aes(x = reorder(bigram, n), y = n)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  coord_flip() +  
+  labs(title = "Top 20 Bigrams",
+       x = "Bigrams",
+       y = "Frequency") +
+  theme_minimal()
+
+# Display the plot
+print(plot)
+```
+
+#7. Run a sentiment analysis using the Afinn lexicon
+```{r}
+# Load the AFINN lexicon
+library(tidytext)
+library(dplyr)
+
+afinn <- get_sentiments("afinn")
+
+# Join the tokenized data with the Afinn lexicon for sentiment scoring
+ChinaFDI_sentiment <- ChinaFDI_clean %>%
+  inner_join(afinn, by = "word") %>%
+  group_by(article_nmbr) %>%
+  summarize(sentiment = sum(value))
+
+# Display the sentiment scores
+ChinaFDI_sentiment
