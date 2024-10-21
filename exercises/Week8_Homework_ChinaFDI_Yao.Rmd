@@ -111,7 +111,7 @@ library(dplyr)
 afinn <- get_sentiments("afinn")
 
 # Join the tokenized data with the Afinn lexicon for sentiment scoring
-ChinaFDI_sentiment <- ChinaFDI_clean %>%
+ChinaFDI_sentiment <- ChinaFDI_clean3 %>%
   inner_join(afinn, by = "word") %>%
   group_by(article_nmbr) %>%
   summarize(sentiment = sum(value))
