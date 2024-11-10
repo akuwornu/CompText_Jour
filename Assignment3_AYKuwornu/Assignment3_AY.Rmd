@@ -183,7 +183,7 @@ articles_df <- articles_df %>%
   select(filename, sentence=value) %>%
   inner_join(final_index)
 
-#After viewing articles_df, I see 64 lines from the index that I don't need. Cutting them 
+#After viewing articles_df, I see 158 lines from the index that I don't need. Cutting them 
 
 articles_df <- articles_df %>%
   slice(-c(1:158)) |> 
@@ -193,4 +193,55 @@ articles_df <- articles_df %>%
 #write.csv(articles_df, "../Assignment3_AYKuwornu/Extracted/ay_moley.csv)
 write.csv(articles_df, "../Assignment3_AYKuwornu/Extracted/ay_moley.csv")
 
+```
+
+#Then tokenize the data, one word per row, Clean the data and Generate a list of the top 20 bigrams
+```{r}
+#Step 1:load tidyverse, tidytext, rio 
+library(tidyverse)
+library(rio)
+library(tidytext)
+library(quanteda)
+library(knitr)
+library(dplyr)
+
+#Step 2: Remove stopwords
+data(stop_words)
+
+
+#Step 3: Clean data and create Bigrams
+bigrams <- articles_df %>% 
+  select(sentence) %>% 
+  mutate(sentence = str_squish(sentence)) |> 
+  mutate(sentence = tolower(sentence)) |>  
+  mutate(sentence = str_replace_all(sentence, "title|pages|publication date|publication subject|issn|language of publication: english|document url|copyright|last updated|database|startofarticle|proquest document id|classification|https|--|people|publication info|illustration|caption|[0-9.]|identifier|Privacy Policy|title|pages|publication date|publication subject|issn|language of publication: english|document url|copyright|last updated|database|startofarticle|About LexisNexis|erms & Conditions|Copyright|2020 LexisNexis|Loose Ends|Power Line|All Rights Reserved|Length|Dateline|Byline|Series Title|Author Note|https|Author|keyword|twitter\\.", "")) |> 
+  mutate(sentence = str_replace_all(sentence, "- ", "")) %>% 
+  unnest_tokens(bigram, sentence, token="ngrams", n=2 ) %>% 
+  separate(bigram, c("word1", "word2"), sep = " ") %>% 
+  filter(!word1 %in% stop_words$word) %>%
+  filter(!word2 %in% stop_words$word) %>% 
+  count(word1, word2, sort = TRUE) %>% 
+  filter(!is.na(word1))
+
+bigrams
+
+
+#Step 4: Generate top 20 bigrams
+top_20_bigrams <- bigrams %>% 
+   slice_max(n, n = 20) %>% 
+   mutate(bigram = paste(word1, " ", word2)) %>% 
+   select(bigram, n)
+
+top_20_bigrams
+```
+
+```{r}
+ggplot(top_20_bigrams, aes(x = reorder(bigram, n), y = n, fill=n)) +
+  geom_bar(stat = "identity") +
+  theme(legend.position = "none") +
+  coord_flip() +  
+  labs(title = "Top 20 bigrams in Moley article",
+       caption = "n=36 articles. Graphic by AY Kuwornu. 11-05-2024",
+       x = "Phrase",
+       y = "Count of terms")
 ```
