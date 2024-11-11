@@ -245,3 +245,11 @@ ggplot(top_20_bigrams, aes(x = reorder(bigram, n), y = n, fill=n)) +
        x = "Phrase",
        y = "Count of terms")
 ```
+
+The thirty-two articles about Raymond Moley was easy to scrape using the pdftools package. The codes worked fairly well for me, especially as I applied them procedurally. My biggest challenge was creating the short path, which I did through the files section of the R markdown file to the bottom right corner of the screen. However, when I tried downloading the R-markdown file on my colleagues computer to run the code, I run into a snug. I alternated by using the github site address to the file and it still hit a snug when I run it on a colleague's file. In the absence of that, the code chunk worked perfectly for me.
+
+My second finding was during the cleaning of the data. As hard as we tried, listing all the assumed metadata didn't do much to the data. Some metadata cleaned, but some were very difficult to clean. We tried varied ways of getting rid of "keyword" for example, but noticed that there were still some keywords in the final data. It's hard to understand what we did not do right, because we used the str_replace_all command which ideally should remove all the metadata. That still failed.
+
+My third finding reflected in the bigrams which had some elements that were offshoots from the failed metadata cleaning. For example, wwwalt morg was an incomprehensible bigram which we suspected was a biproduct of the failure of our command to clean anything with "www". That said, we were not sure to what extent our assumptions were right. Nonetheless, our graph showed a nice collection of bigrams, the top 20 which reflected some key bigrams, e.g. economic recovery, columbia university, rights reserved, etc.
+
+This exercise showed the comprehensive powers of R to help with slicing and dicing data to arrive at meaningful interpretations. Once I am able to cross the file path difficulty, I will be able to do very amazing things with this tool.
